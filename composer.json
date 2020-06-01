@@ -7,15 +7,14 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=7.1.0",
-        "illuminate/support": "^6.0"
+        "php": ">=7.1.0" 
     },
     "require-dev": {  
         "orchestra/testbench": "^5.0" 
     },
     "autoload": {
-        "psr-4": {
-            "Armincms\\Snail\\": "src/"
+        "psr-4": { 
+            "Armincms\\Snail\\Tests\\": "tests/"
         }
     },
     "autoload-dev": {
