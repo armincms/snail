@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": { 
-            "Armincms\\Snail\\Tests\\": "tests/"
+            "Armincms\\Snail\\": "src/"
         }
     },
     "autoload-dev": {
