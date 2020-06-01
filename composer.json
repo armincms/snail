@@ -1,0 +1,40 @@
+{
+    "name": "armincms/snail",
+    "description": "A Laravel Nova tool.",
+    "keywords": [
+        "laravel",
+        "nova"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "require-dev": {  
+        "orchestra/testbench": "^5.0" 
+    },
+    "autoload": {
+        "psr-4": {
+            "Armincms\\Snail\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Armincms\\Snail\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Armincms\\Snail\\SnailCoreServiceProvider"
+            ],
+            "aliases": {
+                "Snail": "Armincms\\Snail\\Snail"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
