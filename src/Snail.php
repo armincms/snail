@@ -10,30 +10,46 @@ use BadMethodCallException;
 use ReflectionClass;
 
 class Snail
-{	    
+{	     
+    /**
+     * Get the current Snail version.
+     *
+     * @var array
+     */
+    public const VERSION = '0.1.0';
+
+    /**
+     * The current API version.
+     *
+     * @return string
+     */
+    protected static $version = '1.0.0';
+
     /**
      * The registered resource names.
      *
      * @var array
      */
-    public static $resources = [];
+    protected static $resources = [];
 
     /**
      * An index of resource names keyed by the model name.
      *
      * @var array
      */
-    public static $resourcesByModel = []; 
+    protected static $resourcesByModel = []; 
     
     /**
-     * Get the current Snail version.
+     * Set the current API version.
      *
      * @return string
      */
-    public static function version()
+    public static function version(string $version)
     {
-        return '0.1.0';
-    }
+        static::$version = $version;
+
+        return new static;
+    }  
 
     /**
      * Get the URI path prefix utilized by Snail.
@@ -64,44 +80,23 @@ class Snail
      */
     public static function resources(array $resources)
     {
-        static::$resources = array_unique(
-            array_merge(static::$resources, $resources)
+        static::$resources[static::$version] = array_unique(
+            array_merge(static::getResources(), $resources)
         );
 
         return new static;
-    }
+    } 
 
     /**
-     * Register all of the schema classes in the given directory.
+     * Register the given resources.
      *
-     * @param  string  $directory
-     * @return void
+     * @param  array  $resources
+     * @return static
      */
-    public static function schemasIn($directory)
+    public static function getResources()
     {
-        $namespace = app()->getNamespace();
-
-        $resources = [];
-        $collections = [];
-
-        foreach ((new Finder)->in($directory)->files() as $resource) {
-            $resource = $namespace.str_replace(
-                ['/', '.php'],
-                ['\\', ''],
-                Str::after($resource->getPathname(), base_path('App').DIRECTORY_SEPARATOR)
-            );
-
-            if (is_subclass_of($resource, Resource::class) &&
-                ! (new ReflectionClass($resource))->isAbstract() &&
-                ! (is_subclass_of($resource, ActionResource::class))) {
-                $resources[] = $resource;
-            }
-        }
-
-        static::resources(
-            collect($resources)->sort()->all()
-        );
-    }
+        return (array) (static::$resources[static::$version] ?? []);
+    } 
 
     /**
      * Get the resource class name for a given key.
@@ -111,7 +106,7 @@ class Snail
      */
     public static function resourceForKey($key)
     {
-        return collect(static::$resources)->first(function ($value) use ($key) {
+        return collect(static::getResources())->first(function ($value) use ($key) {
             return $value::uriKey() === $key;
         });
     }
@@ -141,15 +136,15 @@ class Snail
             $class = get_class($class);
         }
 
-        if (isset(static::$resourcesByModel[$class])) {
-            return static::$resourcesByModel[$class];
+        if (isset(static::$resourcesByModel[static::$version][$class])) {
+            return static::$resourcesByModel[static::$version][$class];
         }
 
-        $resource = collect(static::$resources)->first(function ($value) use ($class) {
+        $resource = collect(static::getResources())->first(function ($value) use ($class) {
             return $value::$model === $class;
         });
 
-        return static::$resourcesByModel[$class] = $resource;
+        return static::$resourcesByModel[static::$version][$class] = $resource;
     }
 
     /**

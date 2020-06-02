@@ -18,11 +18,7 @@ class SnailServiceProvider extends ServiceProvider
             $this->registerPublishing();
         }
  
-        $this->registerResources();  
-
-        Snail::resources([
-            Location::class,
-        ]);
+        $this->registerResources();   
     }
 
     /**

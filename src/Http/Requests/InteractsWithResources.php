@@ -13,7 +13,10 @@ trait InteractsWithResources
      */
     public function resource()
     { 
-        return tap(Snail::resourceForKey($this->route('resource')), function ($resource) { 
+        $version  = $this->route('version');
+        $resource = $this->route('resource');
+
+        return tap(Snail::version($version)->resourceForKey($resource), function ($resource) { 
             abort_if(is_null($resource), 404);
             // abort_if(! $resource::authorizedToViewAny($this), 403); 
         });

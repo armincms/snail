@@ -3,9 +3,18 @@
 namespace Armincms\Snail\Tests;
 
 use Orchestra\Testbench\TestCase;
+use Armincms\Snail\Tests\Fixtures\PostResource;
+use Armincms\Snail\Tests\Fixtures\PostResourceVersioning;
+use Armincms\Snail\Snail;
+use Armincms\Snail\SnailServiceProvider;
+use Armincms\Snail\SnailCoreServiceProvider;
 
 class IntegrationTest extends TestCase
 {
+    public $version = '1.0.0';
+
+    public $versioning = '1.0.1';
+
 	/**
 	 * Setup the test environment.
 	 */
@@ -16,14 +25,15 @@ class IntegrationTest extends TestCase
         $this->loadMigrations();
 
         $this->withFactories(__DIR__.'/Factories'); 
-	}
 
-	protected function getPackageProviders($app)
-	{
-	    return [
-	    	'Armincms\\Snail\\SnailCoreServiceProvider'
-	    ];
-	}
+        Snail::resources([
+            PostResource::class,
+        ]);
+
+        Snail::version($this->versioning)->resources([
+            PostResourceVersioning::class,
+        ]); 
+	} 
 
 	protected function getPackageAliases($app)
 	{
@@ -31,22 +41,37 @@ class IntegrationTest extends TestCase
 	    ];
 	}
 
-	/**
-	 * Define environment setup.
-	 *
-	 * @param  \Illuminate\Foundation\Application  $app
-	 * @return void
-	 */
-	protected function getEnvironmentSetUp($app)
-	{
-	    // Setup default database to use sqlite :memory:
-	    $app['config']->set('database.default', 'testbench');
-	    $app['config']->set('database.connections.testbench', [
-	        'driver'   => 'sqlite',
-	        'database' => ':memory:',
-	        'prefix'   => '',
-	    ]);
-	}
+    /**
+     * Get the service providers for the package.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return array
+     */
+    protected function getPackageProviders($app)
+    {
+        return [
+            SnailCoreServiceProvider::class,
+            SnailServiceProvider::class,
+            // TestServiceProvider::class,
+        ];
+    }
+
+    /**
+     * Define environment.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
+     */
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('database.default', 'sqlite');
+
+        $app['config']->set('database.connections.sqlite', [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+            'prefix'   => '',
+        ]);
+    }
 
     /**
      * Load the migrations for the test environment.
@@ -64,5 +89,9 @@ class IntegrationTest extends TestCase
     protected function migrate()
     {
         $this->artisan('migrate')->run();
+    }
+
+    public function test_for_ignore_warnings()
+    { 
     }
 }

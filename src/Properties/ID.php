@@ -2,9 +2,9 @@
 
 namespace Armincms\Snail\Properties; 
 
-use Armincms\Snail\Contracts\AsNumber; 
+use Armincms\Snail\Contracts\AsInteger; 
 
-class ID extends Property  implements AsNumber
+class ID extends Property  implements AsInteger
 {       
     /**
      * Create a new field.
