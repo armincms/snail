@@ -13,12 +13,12 @@ class ResourceVersioningShowTest extends IntegrationTest
         parent::setUp(); 
     }
 
-    public function test_can_show_a_resource()
+    public function test_can_show_major_resource()
     { 
         $post = factory(Post::class)->create();
 
         $response = $this->withExceptionHandling()
-                        ->getJson("/snail/{$this->versioning}/resources/posts/{$post->id}");   
+                        ->getJson("/snail/{$this->major}/resources/posts/{$post->id}");   
 
         $response->assertStatus(200); 
   

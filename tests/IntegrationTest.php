@@ -3,17 +3,17 @@
 namespace Armincms\Snail\Tests;
 
 use Orchestra\Testbench\TestCase;
+use Armincms\Snail\Tests\Fixtures\PageResource;
 use Armincms\Snail\Tests\Fixtures\PostResource;
 use Armincms\Snail\Tests\Fixtures\PostResourceVersioning;
 use Armincms\Snail\Snail;
 use Armincms\Snail\SnailServiceProvider;
 use Armincms\Snail\SnailCoreServiceProvider;
 
-class IntegrationTest extends TestCase
+abstract class IntegrationTest extends TestCase
 {
-    public $version = '1.0.0';
-
-    public $versioning = '1.0.1';
+    public $version = '1.0.0';   
+    public $major = '1.1.0';   
 
 	/**
 	 * Setup the test environment.
@@ -28,11 +28,14 @@ class IntegrationTest extends TestCase
 
         Snail::resources([
             PostResource::class,
+            PageResource::class,
         ]);
 
-        Snail::version($this->versioning)->resources([
-            PostResourceVersioning::class,
-        ]); 
+        Snail::version($this->major, function($snail) {
+            $snail->resources([
+                PostResourceVersioning::class,
+            ]); 
+        }); 
 	} 
 
 	protected function getPackageAliases($app)
@@ -89,9 +92,5 @@ class IntegrationTest extends TestCase
     protected function migrate()
     {
         $this->artisan('migrate')->run();
-    }
-
-    public function test_for_ignore_warnings()
-    { 
-    }
+    } 
 }

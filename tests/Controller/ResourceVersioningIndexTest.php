@@ -13,14 +13,14 @@ class ResourceVersioningIndexTest extends IntegrationTest
         parent::setUp(); 
     }
 
-    public function test_can_list_a_resource()
+    public function test_can_list_major_resource()
     {
         factory(Post::class)->create();
         factory(Post::class)->create();
         $post = factory(Post::class)->create();
 
         $response = $this->withExceptionHandling()
-                        ->getJson("/snail/{$this->versioning}/resources/posts");    
+                        ->getJson("/snail/{$this->major}/resources/posts");    
 
         $response->assertStatus(200);
 
