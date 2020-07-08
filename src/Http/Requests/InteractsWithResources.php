@@ -12,15 +12,14 @@ trait InteractsWithResources
      * @return mixed
      */
     public function resource()
-    { 
-        $version  = $this->route('version');
-        $resource = $this->route('resource');
-
-        return tap(Snail::version($version)->resourceForKey($resource), function ($resource) { 
-            abort_if(is_null($resource), 404);
-            // abort_if(! $resource::authorizedToViewAny($this), 403); 
-        });
-    }
+    {   
+        return Snail::version($this->route('version'), function($snail) {
+            return tap($snail->resourceForKey($this->route('resource')), function ($resource) { 
+                abort_if(is_null($resource), 404);
+                // abort_if(! $resource::authorizedToViewAny($this), 403); 
+            }); 
+        }); 
+    } 
 
     /**
      * Get a new instance of the resource being requested.
