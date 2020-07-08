@@ -3,6 +3,7 @@
 namespace Armincms\Snail; 
 
 use Armincms\Snail\Events\ServingSnail;
+use Illuminate\Support\Collection; 
 use Illuminate\Support\Facades\Event; 
 use Symfony\Component\Finder\Finder;
 use Illuminate\Http\Request;
@@ -19,11 +20,18 @@ class Snail
     public const VERSION = '0.1.0';
 
     /**
+     * The default `API` version.
+     *
+     * @var array
+     */
+    public const DEFAULT = '1.0.0';
+
+    /**
      * The current API version.
      *
-     * @return string
+     * @var integer
      */
-    protected static $version = '1.0.0';
+    protected static $version;
 
     /**
      * The registered resource names.
@@ -38,17 +46,58 @@ class Snail
      * @var array
      */
     protected static $resourcesByModel = []; 
-    
+
     /**
-     * Set the current API version.
-     *
+     * Get the current API version.
+     * 
      * @return string
      */
-    public static function version(string $version)
+    public static function currentVersion() : string
+    {
+        return static::$version ?? static::DEFAULT;
+    }
+
+    /**
+     * Set the default api version.
+     * 
+     * @return static
+     */
+    public static function setDefaultVersion()
+    {
+        static::$version = static::DEFAULT;
+
+        return new static;
+    }
+
+    /**
+     * Set the current API version.
+     * 
+     * @param string $version
+     * @return static
+     */
+    public static function setVersion(string $version)
     {
         static::$version = $version;
 
         return new static;
+    }
+
+    /**
+     * Prepare the snail for the given version.
+     * 
+     * @param  string   $version  
+     * @param  callable $callback 
+     * @return static             
+     */
+    public static function version(string $version, callable $callback)
+    { 
+        $current = static::currentVersion();
+
+        $value = $callback(static::setVersion($version));
+
+        static::setVersion($current);
+
+        return $value ?? new static;
     }  
 
     /**
@@ -79,34 +128,40 @@ class Snail
      * @return static
      */
     public static function resources(array $resources)
-    {
-        static::$resources[static::$version] = array_unique(
-            array_merge(static::getResources(), $resources)
-        );
+    {   
+        static::$resources[static::currentVersion()] = $resources;
 
         return new static;
-    } 
+    }  
 
     /**
-     * Register the given resources.
-     *
-     * @param  array  $resources
-     * @return static
+     * Get the registered resources of the current version.
+     *  
+     * @return array  
      */
     public static function getResources()
-    {
-        return (array) (static::$resources[static::$version] ?? []);
-    } 
+    { 
+        return  Collection::make(static::$resources)->filter(function($resources, $version) {
+                    return version_compare(static::currentVersion(), $version) !== -1;
+                })
+                ->sortKeysDesc()
+                ->flatten()
+                ->unique(function($resource) {
+                    return $resource::uriKey();
+                }) 
+                ->values()
+                ->all();
+    }   
 
     /**
      * Get the resource class name for a given key.
      *
-     * @param  string  $key
+     * @param  string  $key 
      * @return string
      */
     public static function resourceForKey($key)
     {
-        return collect(static::getResources())->first(function ($value) use ($key) {
+        return Collection::make(static::getResources())->first(function ($value) use ($key) {
             return $value::uriKey() === $key;
         });
     }
@@ -136,15 +191,15 @@ class Snail
             $class = get_class($class);
         }
 
-        if (isset(static::$resourcesByModel[static::$version][$class])) {
-            return static::$resourcesByModel[static::$version][$class];
+        if (isset(static::$resourcesByModel[static::currentVersion()][$class])) {
+            return static::$resourcesByModel[static::currentVersion()][$class];
         }
 
-        $resource = collect(static::getResources())->first(function ($value) use ($class) {
+        $resource = Collection::make(static::getResources())->first(function ($value) use ($class) {
             return $value::$model === $class;
         });
 
-        return static::$resourcesByModel[static::$version][$class] = $resource;
+        return static::$resourcesByModel[static::currentVersion()][$class] = $resource;
     }
 
     /**
