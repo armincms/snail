@@ -214,10 +214,10 @@ abstract class Property extends Displayable implements Resolvable, AsString
      * @return mixed
      */
     public function getValue()
-    { 
-        $value = $this->castValueAs($this->value, $this->getValueType());
-
-        return $this->isNullValue($value) ? null : $value;
+    {  
+        return $this->isNullValue($value) 
+                    ? null 
+                    : $this->castValueAs($this->value, $this->getValueType());
     }  
 
     /**
