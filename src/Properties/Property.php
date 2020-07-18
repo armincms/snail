@@ -270,11 +270,11 @@ abstract class Property extends Displayable implements Resolvable, AsString
                 break;
 
             case 'object': 
-                return Collection::make($value)->jsonSerialize();
+                return Collection::make($value)->toJson(JSON_FORCE_OBJECT);
                 break;
 
             case 'array': 
-                return Collection::make($value)->values()->toArray();
+                return Collection::make($value)->values()->jsonSerialize();
                 break;
 
             case 'boolean': 
