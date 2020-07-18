@@ -65,11 +65,11 @@ class SnailServiceProvider extends ServiceProvider
     protected function routeConfiguration()
     {
         return [
-            'namespace' => 'Armincms\Snail\Http\Controllers',
-            'domain' => config('snail.domain', null),
-            'as' => 'snail.',
-            'prefix' => Snail::path().'/{version}',
             'middleware' => config('snail.middleware', null),
+            'namespace'  => 'Armincms\Snail\Http\Controllers',
+            'domain'     => config('snail.domain', null),
+            'prefix'     => Snail::path(),
+            'as'         => 'snail.',
         ];
     } 
 
