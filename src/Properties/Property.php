@@ -215,7 +215,7 @@ abstract class Property extends Displayable implements Resolvable, AsString
      */
     public function getValue()
     {  
-        return $this->isNullValue($value) 
+        return $this->isNullValue($this->value) 
                     ? null 
                     : $this->castValueAs($this->value, $this->getValueType());
     }  
@@ -270,11 +270,11 @@ abstract class Property extends Displayable implements Resolvable, AsString
                 break;
 
             case 'object': 
-                return Collection::make($value)->toJson(JSON_FORCE_OBJECT);
+                return (object) Collection::make($value)->jsonSerialize();
                 break;
 
             case 'array': 
-                return Collection::make($value)->values()->jsonSerialize();
+                return (array) Collection::make($value)->values()->jsonSerialize();
                 break;
 
             case 'boolean': 
