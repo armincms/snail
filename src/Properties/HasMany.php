@@ -3,8 +3,9 @@
 namespace Armincms\Snail\Properties;
    
 use Armincms\Snail\Contracts\ListableProperty;
+use Armincms\Snail\Contracts\AsArray;
 
-class HasMany extends Relation implements ListableProperty
+class HasMany extends Relation implements ListableProperty, AsArray
 {        
     /**
      * Resolve the field's value.
