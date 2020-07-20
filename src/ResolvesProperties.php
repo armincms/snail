@@ -21,7 +21,7 @@ trait ResolvesProperties
         return $this
                 ->availableProperties($request) 
                 ->filterForIndex($request, $this->resource)
-                ->withoutListableProperties()
+                // ->withoutListableProperties()
                 ->authorized($request)
                 ->resolveForDisplay($this->resource);
     }
