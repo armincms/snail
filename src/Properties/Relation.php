@@ -71,7 +71,7 @@ abstract class Relation extends Property implements AsObject
                     return $schema->getKey();
                 }),
 
-                Text::make('label', function() use ($schema) {
+                Text::make('title', function() use ($schema) {
                     return $this->formatDisplayValue($schema);
                 })
             ];
