@@ -71,6 +71,7 @@ abstract class Property extends Displayable implements Resolvable, AsString
     public $nullValues = ['']; 
 
     protected $casts = [
+        \Armincms\Snail\Contracts\AsBoolean::class => 'boolean',
         \Armincms\Snail\Contracts\AsInteger::class => 'integer',
         \Armincms\Snail\Contracts\AsNumber::class  => 'number',
         \Armincms\Snail\Contracts\AsArray::class   => 'array', 
