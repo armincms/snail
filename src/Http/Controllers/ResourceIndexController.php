@@ -3,6 +3,7 @@
 namespace Armincms\Snail\Http\Controllers;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
 use Armincms\Snail\Http\Requests\ResourceIndexRequest; 
 use Armincms\Snail\Http\Resources\ResourceCollection; 
 use Illuminate\Support\Arr;
@@ -20,16 +21,19 @@ class ResourceIndexController extends Controller
         $paginator = $this->paginator(
             $request, $resource = $request->resource()
         );  
-
-        $additionals = (array) $resource::additionalInformation($request);
-
-        return response()->json(array_merge($paginator->jsonSerialize(), $additionals, [
+ 
+        return response()->json(array_merge(
+            (array) $resource::additionalInformation($request), 
+            [
+                'links' => $this->paginationLinks($paginator->toArray()),
+                'meta' => $this->meta($paginator->toArray())
+            ],
+            [
                 'label' => $resource::label(),  
                 'singularLabel' => $resource::singularLabel(),  
-                'data' => $paginator->getCollection()
-                                    ->mapInto($resource)
-                                    ->map->serializeForIndex($request),
-        ]));
+                'data' => $paginator->getCollection()->mapInto($resource)->map->serializeForIndex($request),
+            ]
+        ));
     }
 
     /**
@@ -41,8 +45,40 @@ class ResourceIndexController extends Controller
      */
     protected function paginator(ResourceIndexRequest $request, $resource)
     {
-        return $request->toQuery()->simplePaginate(
+        return $request->toQuery()->paginate(
             $request->perPage ?? $resource::perPageOptions()[0]
         );
+    }
+    /**
+     * Get the pagination links for the response.
+     *
+     * @param  array  $paginated
+     * @return array
+     */
+    protected function paginationLinks($paginated)
+    {
+        return [
+            'first' => $paginated['first_page_url'] ?? null,
+            'last' => $paginated['last_page_url'] ?? null,
+            'prev' => $paginated['prev_page_url'] ?? null,
+            'next' => $paginated['next_page_url'] ?? null,
+        ];
+    }
+
+    /**
+     * Gather the meta data for the response.
+     *
+     * @param  array  $paginated
+     * @return array
+     */
+    protected function meta($paginated)
+    {
+        return Arr::except($paginated, [
+            'data',
+            'first_page_url',
+            'last_page_url',
+            'prev_page_url',
+            'next_page_url',
+        ]);
     }
 }
