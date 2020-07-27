@@ -175,4 +175,150 @@ abstract class Schema implements ArrayAccess, UrlRoutable
     {
         return $this->serializeForDisplay($this->detailProperties($request));
     }
+
+    /**
+     * Prepare the resource for JSON serialization.
+     *
+     * @param  \Armincms\Snail\Http\Requests\SnailRequest  $request
+     * @return array
+     */
+    public function serializeForSchema(SnailRequest $request)
+    {
+        return $this->serializeForDisplay($this->detailProperties($request));
+    } 
+
+    /**
+     * Get meta data information about all properties for schema.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public static function propertiesInformation(Request $request)
+    {
+        $resource = new static(static::newModel());
+
+        return collect($resource->properties($request))->map->serializeForSchema($request);
+    }
+
+    public static function indexSchema(Request $request)
+    {
+        $object = class_basename(static::class). 'Object';
+
+        return [
+            'data' => [
+                'type'   => 'array',
+                'items'  => "array[{$object}]",
+            ],
+
+            $object => [
+                'type' => 'object',
+                'properties' => collect(static::propertiesInformation($request))
+                                    ->where('showOnIndex')
+                                    ->values()
+                                    ->all(),
+
+            ],
+
+            'meta' => [
+                'type' => 'object',
+                'properties' => [ 
+                    "current_page" => [
+                        "type" => "integer"
+                    ],
+                    "from" => [
+                        "type" => "integer"
+                    ],
+                    "last_page" => [
+                        "type" => "integer"
+                    ],
+                    "path" => [
+                        "type" => "string"
+                    ],
+                    "per_page" => [
+                        "type" => "integer"
+                    ],
+                    "to" => [
+                        "type" => "integer"
+                    ],
+                    "total" => [
+                        "type" => "integer"
+                    ] 
+                ]
+            ],
+
+            'links' => [
+                'type' => 'object',
+                'properties' => [
+                    "first" => [
+                        "type" => "string",
+                        "nullable" => true
+                    ],
+                    "last" => [
+                        "type" => "string",
+                        "nullable" => true
+                    ],
+                    "prev" => [
+                        "type" => "string",
+                        "nullable" => true
+                    ],
+                    "next" => [
+                        "type" => "string",
+                        "nullable" => true
+                    ]
+                ]
+            ],
+        ];
+    }
+
+    public static function detailSchema(Request $request)
+    {
+        return [
+            'properties' => collect(static::propertiesInformation($request))
+                                ->where('showOnDetail')
+                                ->values()
+                                ->all(),
+        ];
+    } 
+
+    public static function filterSchema(Request $request)
+    {
+        return [ 
+        ];
+    }
+
+    public static function schema(Request $request)
+    {
+        return [
+            'label' => static::label(), 
+            'singularLabel' => static::singularLabel(),
+            'show' => [ 
+                'request' => [
+                    'path'   => '{version}/'.static::uriKey().'/{id}',
+                    'method' => 'get',
+                    'params'    => [
+                        // relation
+                    ],
+                ],
+                'response' => array_merge((array) static::detailSchema($request),[
+                    'code'   => 200,
+                    'type' => 'object',
+                ]),
+            ],
+            'index' => [
+                'request' => [
+                    'path' => '{version}/'.static::uriKey(),
+                    'method' => 'get',
+                    'params'    => [
+                        'type' => 'object',
+                        'properties' => (array) static::filterSchema($request) 
+                    ],
+                ],
+                'response' => [
+                    'code' => 200,
+                    'type' => 'object',
+                    'properties' => (array) static::indexSchema($request)
+                ],
+            ],
+        ];
+    }
 }

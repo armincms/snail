@@ -175,7 +175,20 @@ abstract class Relation extends Property implements AsObject
     public function isNotRedundant(Request $request)
     {
         return ! $request instanceof ResourceIndexRequest || ! $this->isReverseRelation($request);
-    } 
+    }  
+
+    /**
+     * Prepare the property for client schema consumption.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function serializeForSchema(Request $request)
+    {
+        return array_merge(parent::serializeForSchema($request), [
+            'urikey'    => $this->resourceClass::uriKey(),
+        ]);
+    }
 
     /**
      * Prepare the field for JSON serialization.
@@ -185,8 +198,8 @@ abstract class Relation extends Property implements AsObject
     public function jsonSerialize()
     {
         return array_merge([ 
-            'relationship' => $this->relationship, 
-            'resourceName' => $this->resourceName,
+            'relationship'  => $this->relationship, 
+            'resourceName'  => $this->resourceName,
         ], parent::jsonSerialize());
     }
 }

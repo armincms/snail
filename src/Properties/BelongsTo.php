@@ -3,6 +3,7 @@
 namespace Armincms\Snail\Properties;
   
 use Illuminate\Support\Str; 
+use Illuminate\Http\Request; 
 use Armincms\Snail\Http\Requests\SnailRequest;
 use Armincms\Snail\Http\Requests\ResourceIndexRequest; 
 
@@ -41,6 +42,20 @@ class BelongsTo extends Relation
 
         return $this;
     } 
+    
+    /**
+     * Prepare the property for client schema consumption.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function serializeForSchema(Request $request)
+    {
+        return array_merge(parent::serializeForSchema($request), [
+            'properties' => $this->resolveProperties($this->resourceClass)
+                                    ->map->serializeForSchema($request),
+        ]);
+    }
 
     /**
      * Prepare the field for JSON serialization.

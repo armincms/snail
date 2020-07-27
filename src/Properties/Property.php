@@ -2,6 +2,7 @@
 
 namespace Armincms\Snail\Properties; 
  
+use Illuminate\Http\Request; 
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable; 
@@ -290,6 +291,26 @@ abstract class Property extends Displayable implements Resolvable, AsString
     } 
 
     /**
+     * Prepare the property for client schema consumption.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function serializeForSchema(Request $request)
+    {
+        return array_merge([
+            'name'         => $this->name,
+            'showOnDetail' => $this->showOnDetail,
+            'showOnIndex'  => $this->showOnIndex,
+            'nullable'     => $this->nullable,
+            'type'         => $this->getValueType(),
+            'default'      => $this->isNullValue($this->value) ? null : $this->value,
+            'nullValues'   => ! $this->nullable || is_callable($this->nullValues) 
+                                    ? [] : (array) $this->nullValues,
+        ]);
+    } 
+
+    /**
      * Prepare the property for JSON serialization.
      *
      * @return array
@@ -298,12 +319,12 @@ abstract class Property extends Displayable implements Resolvable, AsString
     { 
         return with(app(SnailRequest::class), function ($request) {
             return array_merge([
-                'name'=> $this->name,   
+                'name'     => $this->name,   
                 'nullable' => $this->nullable,   
                 'sortable' => $this->sortable, 
+                'value'    => $this->getValue(),
+                'type'     => $this->getValueType(),
                 // 'sortableUriKey' => $this->sortableUriKey(),  
-                'value' => $this->getValue(),
-                'type'  => $this->getValueType(),
             ], $this->meta());
         });
     } 

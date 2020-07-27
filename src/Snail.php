@@ -151,7 +151,52 @@ class Snail
                 }) 
                 ->values()
                 ->all();
-    }   
+    }  
+
+    /**
+     * Get the schemas available for the given resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public static function availableSchemas(Request $request)
+    {
+        return collect(static::$resources)->map(function($schemas, $version) use ($request) {
+            return static::version($version, function($snail) use ($request) {
+                return $snail->resourceInformation($request);
+            });
+        })->all();
+    }
+
+    /**
+     * Get the versions available for the given request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public static function availableVersions(Request $request)
+    {
+        return collect(static::$resources)->keys()->sort()->all();
+    }
+
+    /**
+     * Get meta data information about all resources for schema.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public static function resourceInformation(Request $request)
+    {
+        return collect(static::getResources())->map(function ($resource) use ($request) {
+            return array_merge([
+                'uriKey'                => $resource::uriKey(),
+                'label'                 => $resource::label(),
+                'singularLabel'         => $resource::singularLabel(),
+                // 'authorizedToCreate' => $resource::authorizedToCreate($request),
+                // 'searchable'         => $resource::searchable(), 
+            ], $resource::additionalInformation($request));
+        })->values()->all();
+    }
 
     /**
      * Get the resource class name for a given key.
