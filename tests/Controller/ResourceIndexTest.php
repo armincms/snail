@@ -20,7 +20,7 @@ class ResourceIndexTest extends IntegrationTest
         $post = factory(Post::class)->create();
 
         $response = $this->withExceptionHandling()
-                        ->getJson("/snail/{$this->version}/resources/posts");    
+                        ->getJson("/snail/{$this->version}/posts");    
 
         $response->assertStatus(200);
 

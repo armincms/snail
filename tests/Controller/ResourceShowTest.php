@@ -18,7 +18,7 @@ class ResourceShowTest extends IntegrationTest
         $post = factory(Post::class)->create();
 
         $response = $this->withExceptionHandling()
-                        ->getJson("/snail/{$this->version}/resources/posts/{$post->id}");    
+                        ->getJson("/snail/{$this->version}/posts/{$post->id}");    
 
         $response->assertStatus(200); 
   
