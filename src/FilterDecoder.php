@@ -7,11 +7,11 @@ use Armincms\Snail\Query\ApplyFilter;
 class FilterDecoder
 {
     /**
-     * The filter string to be decoded.
+     * The filters array.
      *
      * @var string
      */
-    protected $filterString;
+    protected $filters;
 
     /**
      * The filters available via the request.
@@ -23,12 +23,12 @@ class FilterDecoder
     /**
      * Create a new FilterDecoder instance.
      *
-     * @param  string  $filterString
+     * @param  string  $filters
      * @param  array|null  $availableFilters
      */
-    public function __construct($filterString, $availableFilters = null)
+    public function __construct($filters, $availableFilters = null)
     {
-        $this->filterString = $filterString;
+        $this->filters = $filters;
         $this->availableFilters = collect($availableFilters);
     }
 
@@ -38,14 +38,10 @@ class FilterDecoder
      * @return array
      */
     public function filters()
-    {
-        if (empty($filters = $this->decodeFromBase64String())) {
-            return collect();
-        }
-
-        return collect($filters)->map(function ($filter) {
-            $matchingFilter = $this->availableFilters->first(function ($availableFilter) use ($filter) {
-                return $filter['class'] === $availableFilter->key();
+    { 
+        return collect($this->filters)->map(function ($filter, $key) {
+            $matchingFilter = $this->availableFilters->first(function ($availableFilter) use ($key) {
+                return $key === $availableFilter->key();
             });
 
             if ($matchingFilter) {
@@ -64,21 +60,5 @@ class FilterDecoder
             })->map(function ($filter) {
                 return new ApplyFilter($filter['filter'], $filter['value']);
             })->values();
-    }
-
-    /**
-     * Decode the filter string from base64 encoding.
-     *
-     * @return array
-     */
-    public function decodeFromBase64String()
-    {
-        if (empty($this->filterString)) {
-            return [];
-        }
-
-        $filters = json_decode(base64_decode($this->filterString), true);
-
-        return is_array($filters) ? $filters : [];
-    }
+    } 
 }
