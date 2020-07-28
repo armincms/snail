@@ -200,6 +200,11 @@ abstract class Schema implements ArrayAccess, UrlRoutable
         return collect($resource->properties($request))->map->serializeForSchema($request);
     }
 
+    /**
+     * Get the resource index schema 
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
     public static function indexSchema(Request $request)
     {
         $object = class_basename(static::class). 'Object';
@@ -270,6 +275,12 @@ abstract class Schema implements ArrayAccess, UrlRoutable
         ];
     }
 
+    /**
+     * Get the resource detail schema.
+     * 
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
     public static function detailSchema(Request $request)
     {
         return [
@@ -278,14 +289,27 @@ abstract class Schema implements ArrayAccess, UrlRoutable
                                 ->values()
                                 ->all(),
         ];
-    } 
+    }  
 
+    /**
+     * Get the resource filter schema.
+     * 
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
     public static function filterSchema(Request $request)
     {
-        return [ 
-        ];
-    }
+        $resource = new static(static::newModel());
 
+        return collect($resource->filters($request))->map->jsonSerialize()->keyBy('name')->all();
+    } 
+
+    /**
+     * Get the resource schema.
+     * 
+     * @param  \Illuminate\Http\Request $request
+     * @return array
+     */
     public static function schema(Request $request)
     {
         return [
@@ -296,7 +320,13 @@ abstract class Schema implements ArrayAccess, UrlRoutable
                     'path'   => '{version}/'.static::uriKey().'/{id}',
                     'method' => 'get',
                     'params'    => [
-                        // relation
+                        'type' => 'object',
+                        'properties' => [
+                            'relations' => [
+                                'type' => 'array',
+                                'items' => 'array[string]'
+                            ],
+                        ], 
                     ],
                 ],
                 'response' => array_merge((array) static::detailSchema($request),[
@@ -310,7 +340,13 @@ abstract class Schema implements ArrayAccess, UrlRoutable
                     'method' => 'get',
                     'params'    => [
                         'type' => 'object',
-                        'properties' => (array) static::filterSchema($request) 
+                        'properties' => array_merge([  
+                            'relations' => [
+                                'type' => 'array',
+                                'items' => 'array[string]'
+                            ],
+                            'filters' => (array) static::filterSchema($request)
+                        ]) 
                     ],
                 ],
                 'response' => [
