@@ -2,13 +2,14 @@
 
 namespace Armincms\Snail; 
 
-use Armincms\Snail\Events\ServingSnail;
+use BadMethodCallException; 
+use ReflectionClass;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str; 
 use Illuminate\Support\Collection; 
 use Illuminate\Support\Facades\Event; 
 use Symfony\Component\Finder\Finder;
-use Illuminate\Http\Request;
-use BadMethodCallException; 
-use ReflectionClass;
+use Armincms\Snail\Events\ServingSnail;
 
 class Snail
 {	     
@@ -119,7 +120,22 @@ class Snail
     public static function serving($callback)
     {
         Event::listen(ServingSnail::class, $callback);
-    }  
+    } 
+
+    /**
+     * Humanize the given value into a proper name.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public static function humanize($value)
+    {
+        if (is_object($value)) {
+            return static::humanize(class_basename(get_class($value)));
+        }
+
+        return Str::title(Str::snake($value, ' '));
+    } 
 
     /**
      * Register the given resources.
