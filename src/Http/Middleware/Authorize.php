@@ -2,7 +2,7 @@
 
 namespace Armincms\Snail\Http\Middleware;
 
-use Armincms\Snail\Nova;
+use Armincms\Snail\Snail;
 
 class Authorize
 {
@@ -15,6 +15,6 @@ class Authorize
      */
     public function handle($request, $next)
     {
-        return Nova::check($request) ? $next($request) : abort(403);
+        return Snail::check($request) ? $next($request) : abort(403);
     }
 }

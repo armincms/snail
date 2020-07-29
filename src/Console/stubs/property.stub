@@ -1,0 +1,10 @@
+<?php
+
+namespace {{ namespace }};
+
+use Armincms\Snail\Properties\Property;
+use Armincms\Snail\Contracts\{{ type }};  
+
+class {{ class }} extends Property implements {{ type }}
+{ 
+}

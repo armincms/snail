@@ -80,13 +80,10 @@ class SnailServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->commands([ 
-            // Console\BaseResourceCommand::class, 
-            // Console\FieldCommand::class,
-            // Console\InstallCommand::class, 
-            // Console\PublishCommand::class,
-            // Console\ResourceCommand::class,  
-            // Console\UserCommand::class, 
+        $this->commands([  
+            Console\PropertyCommand::class, 
+            Console\ResourceCommand::class,   
+            Console\FilterCommand::class,   
         ]);
     } 
 }
