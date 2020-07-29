@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Nova\Filters;
+namespace Armincms\Snail\Filters;
 
 use Illuminate\Http\Request;
 

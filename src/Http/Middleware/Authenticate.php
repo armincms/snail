@@ -5,7 +5,7 @@ namespace Armincms\Snail\Http\Middleware;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate as BaseAuthenticationMiddleware;
-use Armincms\Snail\Exceptions\AuthenticationException as NovaAuthenticationException;
+use Armincms\Snail\Exceptions\AuthenticationException as SnailAuthenticationException;
 
 class Authenticate extends BaseAuthenticationMiddleware
 {
@@ -30,7 +30,7 @@ class Authenticate extends BaseAuthenticationMiddleware
 
             return parent::handle($request, $next, ...$guards);
         } catch (AuthenticationException $e) {
-            throw new NovaAuthenticationException('Unauthenticated.', $e->guards());
+            throw new SnailAuthenticationException('Unauthenticated.', $e->guards());
         }
     }
 }

@@ -25,8 +25,8 @@ class AuthenticationException extends BaseAuthenticationException
      */
     protected function location()
     {
-        if (Route::getRoutes()->hasNamedRoute('nova.login')) {
-            return route('nova.login');
+        if (Route::getRoutes()->hasNamedRoute('snail.login')) {
+            return route('snail.login');
         } elseif (Route::getRoutes()->hasNamedRoute('login')) {
             return route('login');
         }
