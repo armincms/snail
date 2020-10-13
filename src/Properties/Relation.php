@@ -2,6 +2,7 @@
 
 namespace Armincms\Snail\Properties;
  
+use Closure;
 use Illuminate\Support\Str; 
 use Illuminate\Http\Request; 
 use Armincms\Snail\Http\Requests\SnailRequest;
