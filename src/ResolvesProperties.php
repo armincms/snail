@@ -2,11 +2,9 @@
 
 namespace Armincms\Snail;
 
-use Closure;  
-use Armincms\Snail\Contracts\ListableProperty;
-use Armincms\Snail\Contracts\Resolvable; 
-use Armincms\Snail\Properties\PropertyCollection;  
+use Closure;   
 use Armincms\Snail\Http\Requests\SnailRequest;
+use Armincms\Snail\Properties\PropertyCollection;  
 
 trait ResolvesProperties
 {
@@ -19,10 +17,9 @@ trait ResolvesProperties
     public function indexProperties(SnailRequest $request)
     {
         return $this
-                ->availableProperties($request) 
+                ->resolveProperties($request) 
                 ->filterForIndex($request, $this->resource)
-                // ->withoutListableProperties()
-                ->authorized($request)
+                ->withoutListableProperties() 
                 ->resolveForDisplay($this->resource);
     }
 
@@ -35,11 +32,11 @@ trait ResolvesProperties
     public function detailProperties(SnailRequest $request)
     {
         return $this
-                ->availableProperties($request) 
+                ->resolveProperties($request) 
                 ->filterForDetail($request, $this->resource)
-                ->authorized($request)
+                ->withoutListableProperties() 
                 ->resolveForDisplay($this->resource);
-    } 
+    }  
 
     /**
      * Resolve the given properties to their values.
@@ -49,41 +46,13 @@ trait ResolvesProperties
      * @return \Armincms\Snail\Properties\PropertyCollection
      */
     protected function resolveProperties(SnailRequest $request, Closure $filter = null)
-    {
-        $properties = $this->resolveNonPivotProperties($request); 
+    {  
+        $properties = $this->availableProperties($request)
+                           ->resolve($this->resource)
+                           ->authorized($request);
 
         return is_null($filter) ? $properties : $filter($properties); 
-    }
-
-    /**
-     * Resolve the non pivot properties for the resource.
-     *
-     * @param  \Armincms\Snail\Http\Requests\SnailRequest  $request
-     * @return \Armincms\Snail\Properties\PropertyCollection
-     */
-    protected function resolveNonPivotProperties(SnailRequest $request)
-    {
-        return $this->availableProperties($request)
-            ->resolve($this->resource)
-            ->authorized($request);
-    }
-
-    protected function resolvePropertiesForDetail(SnailRequest $request, Closure $filter)
-    {
-        return $this->resolveNonPivotProperties($request); 
-    }
-
-    /**
-     * Resolve the property for the given attribute.
-     *
-     * @param  \Armincms\Snail\Http\Requests\SnailRequest  $request
-     * @param  string  $attribute
-     * @return \Armincms\Snail\Properties\Property
-     */
-    public function resolvePropertyForAttribute(SnailRequest $request, $attribute)
-    {
-        return $this->resolveProperties($request)->findPropertyByAttribute($attribute);
-    } 
+    }  
 
     /**
      * Get the properties that are available for the given request.
