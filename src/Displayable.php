@@ -15,18 +15,25 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
     use Makeable;   
 
     /**
-     * Indicates if the property should be shown on the index view.
+     * Indicates if the property should be shown on the index response.
      *
      * @var \Closure|bool
      */
     public $showOnIndex = true;
 
     /**
-     * Indicates if the property should be shown on the detail view.
+     * Indicates if the property should be shown on the detail response.
      *
      * @var \Closure|bool
      */
     public $showOnDetail = true;   
+
+    /**
+     * Indicates if the property should be shown on the realtion response.
+     *
+     * @var \Closure|bool
+     */
+    public $showOnRelation = true;   
 
     /**
      * Determine if the property can display.
@@ -49,7 +56,7 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
     }
 
     /**
-     * Specify that the property should be hidden from the index view.
+     * Specify that the property should be hidden from the index response.
      *
      * @param  \Closure|bool  $callback
      * @return $this
@@ -65,7 +72,7 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
     }
 
     /**
-     * Specify that the property should be hidden from the detail view.
+     * Specify that the property should be hidden from the detail response.
      *
      * @param  \Closure|bool  $callback
      * @return $this
@@ -81,7 +88,7 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
     } 
 
     /**
-     * Specify that the property should be hidden from the index view.
+     * Specify that the property should be hidden from the index response.
      *
      * @param  \Closure|bool  $callback
      * @return $this
@@ -94,7 +101,7 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
     }
 
     /**
-     * Specify that the property should be hidden from the detail view.
+     * Specify that the property should be hidden from the detail response.
      *
      * @param  \Closure|bool  $callback
      * @return $this
@@ -102,6 +109,19 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
     public function showOnDetail($callback = true)
     {
         $this->showOnDetail = $callback;
+
+        return $this;
+    } 
+
+    /**
+     * Specify that the property should be hidden from the resource.
+     *
+     * @param  \Closure|bool  $callback
+     * @return $this
+     */
+    public function showOnRelation($callback = true)
+    {
+        $this->showOnRelation = $callback;
 
         return $this;
     } 
@@ -139,7 +159,23 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
     } 
 
     /**
-     * Specify that the property should only be shown on the index view.
+     * Check showing on relation.
+     *
+     * @param  \Armincms\Snail\Http\Requests\SnailRequest  $request
+     * @param  mixed  $schema
+     * @return bool
+     */
+    public function isShownOnRelation(SnailRequest $request, $schema): bool
+    {
+        if (is_callable($this->showOnRelation)) {
+            $this->showOnRelation = call_user_func($this->showOnRelation, $request, $schema);
+        }
+
+        return $this->showOnRelation;
+    } 
+
+    /**
+     * Specify that the property should only be shown on the index response.
      *
      * @return $this
      */
@@ -151,7 +187,7 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
     }
 
     /**
-     * Specify that the property should only be shown on the detail view.
+     * Specify that the property should only be shown on the detail response.
      *
      * @return $this
      */
