@@ -18,9 +18,11 @@ class ResourceIndexController extends Controller
      */
     public function handle(ResourceIndexRequest $request)
     {    
-        $paginator = $this->paginator(
-            $request, $resource = $request->resource()
-        );  
+        $resource = tap($request->resource(), function($resource) {
+            $resource->authorizedToViewAny($resource);
+        });
+
+        $paginator = $this->paginator($request, $resource);  
  
         return response()->json(array_merge(
             (array) $resource::additionalInformation($request), 

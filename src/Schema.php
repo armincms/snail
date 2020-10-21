@@ -16,9 +16,10 @@ abstract class Schema implements ArrayAccess, UrlRoutable
 {
     use ConditionallyLoadsAttributes,
         DelegatesToResource, 
-        PerformsQueries,
         ResolvesProperties,
-        ResolvesFilters;
+        ResolvesFilters,
+        PerformsQueries,
+        Authorizable;
 
     /**
      * The underlying model resource instance.

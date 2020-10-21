@@ -19,7 +19,7 @@ class ResourceShowController extends Controller
             $request->newResource()->detailQuery($request, $query);
         })->firstOrFail());
 
-        // $resource->authorizeToView($request);  
+        $resource->authorizedToView($request);  
 
         return response()->json($resource->serializeForDetail($request)); 
     }
