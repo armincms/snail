@@ -18,8 +18,8 @@ class ResourceIndexController extends Controller
      */
     public function handle(ResourceIndexRequest $request)
     {    
-        $resource = tap($request->resource(), function($resource) {
-            $resource->authorizedToViewAny($resource);
+        $resource = tap($request->newResource(), function($resource) use ($request) {
+            $resource->authorizedToViewAny($request);
         });
 
         $paginator = $this->paginator($request, $resource);  

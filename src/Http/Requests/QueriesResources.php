@@ -12,7 +12,7 @@ trait QueriesResources
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function toQuery()
-    { 
+    {
         $resource = $this->resource();
 
         return $resource::buildIndexQuery(
@@ -28,7 +28,14 @@ trait QueriesResources
      */
     public function newQuery()
     {
-        return $this->model()->newQuery();
+        if (! $this->viaRelationship()) {
+            return $this->model()->newQuery();
+        }
+
+        return forward_static_call([$this->viaResource(), 'newModel'])
+                        ->newQueryWithoutScopes()->findOrFail(
+                            $this->viaResourceId
+                        )->{$this->viaRelationship}();
     }
 
     /**
@@ -38,7 +45,14 @@ trait QueriesResources
      */
     public function newQueryWithoutScopes()
     {
-        return $this->model()->newQueryWithoutScopes();
+        if (! $this->viaRelationship()) {
+            return $this->model()->newQueryWithoutScopes();
+        }
+
+        return forward_static_call([$this->viaResource(), 'newModel'])
+                    ->newQueryWithoutScopes()->findOrFail(
+                        $this->viaResourceId
+                    )->{$this->viaRelationship}()->withoutGlobalScopes();
     }
 
     /**
