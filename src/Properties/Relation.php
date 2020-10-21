@@ -68,11 +68,11 @@ abstract class Relation extends Property implements AsObject
         $this->relationship = $this->attribute; 
         $this->propertiesCallback = function($schema) {
             return [ 
-                ID::make(Str::camel(Str::singular($this->name).'Id'), function() use ($schema) { 
+                ID::make(Str::studly(Str::singular($this->name).'Id'), function() use ($schema) { 
                     return $schema->getKey();
                 }),
 
-                Text::make('title', function() use ($schema) {
+                Text::make('Title', function() use ($schema) {
                     return $this->formatDisplayValue($schema);
                 })
             ];

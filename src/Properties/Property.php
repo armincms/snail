@@ -244,7 +244,7 @@ abstract class Property extends Displayable implements Resolvable, AsString
      * 
      * @return string
      */
-    protected function getValueType()
+    public function getValueType()
     {
         return collect($this->casts)->first(function($value, $key) {
             return $this instanceof $key;
@@ -291,6 +291,18 @@ abstract class Property extends Displayable implements Resolvable, AsString
     } 
 
     /**
+     * Preaparing for json shema.
+     * 
+     * @return [type] [description]
+     */
+    public function jsonSchema()
+    {
+        return array_merge([ 
+            'type'  => $this->getValueType(),
+        ]);
+    }
+
+    /**
      * Prepare the property for client schema consumption.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -298,13 +310,12 @@ abstract class Property extends Displayable implements Resolvable, AsString
      */
     public function serializeForSchema(Request $request)
     {
-        return array_merge([
+        return array_merge($this->jsonSchema(), [
             'name'         => $this->name,
             'showOnDetail' => $this->showOnDetail,
             'showOnIndex'  => $this->showOnIndex,
-            'nullable'     => $this->nullable,
-            'type'         => $this->getValueType(),
-            'default'      => $this->isNullValue($this->value) ? null : $this->value,
+            'nullable'     => $this->nullable, 
+            'default'      => $this->isNullValue($this->value) ? null : $this->value, 
             'nullValues'   => ! $this->nullable || is_callable($this->nullValues) 
                                     ? [] : (array) $this->nullValues,
         ]);

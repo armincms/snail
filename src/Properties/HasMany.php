@@ -35,22 +35,21 @@ class HasMany extends Relation implements ListableProperty, AsArray
     }
     
     /**
-     * Prepare the property for client schema consumption.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * Preaparing for json shema.
+     * 
+     * @return [type] [description]
      */
-    public function serializeForSchema(Request $request)
-    {
+    public function jsonSchema()
+    { 
         $object = class_basename($this->resourceClass). 'Object';
 
-        return array_merge(parent::serializeForSchema($request), [
+        return array_merge(parent::jsonSchema(), [
             'items' => "array[{$object}]",
             $object => [
                 'type'      => 'object',
                 'properties'=> $this->resolveProperties($this->resourceClass)
-                                    ->map->serializeForSchema($request)
+                                    ->map->jsonSchema()
             ],
         ]);
-    }
+    } 
 }

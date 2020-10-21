@@ -2,26 +2,58 @@
 
 namespace Armincms\Snail\Properties; 
 
+use Closure;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request; 
 use Armincms\Snail\Contracts\AsObject;
+use Armincms\Snail\Contracts\Resolvable;
 
 class Collection extends Property implements AsObject
-{       
+{         
     /**
-     * Indicates if the field value cast as array.
+     * Create a new field.
      *
-     * @var bool
+     * @param  string  $name
+     * @param  string|callable|null  $attribute
+     * @param  callable|null  $resolveCallback
+     * @return void
      */
-    public $asArray = false;
+    public function __construct($name, $attribute = null, callable $resolveCallback = null)
+    {
+        parent::__construct($name, $attribute, $resolveCallback);
+
+        $this->propertiesCallback = function() {
+            return [ 
+            ];
+        };
+
+        $this->displayUsing(function($value, $resource, $attribute) { 
+            return $this->getProperties()->resolveForDisplay($value)->keyBy->name->map->getValue()->all();
+        });
+    } 
 
     /**
-     * Indicate that the field value should cast as array.
+     * Resolve the property's value.
      *
-     * @param  bool  $asArray 
-     * @return $this
+     * @param  mixed  $resource
+     * @param  string|null  $attribute
+     * @return void
      */
-    public function asArray($asArray = true)
+    public function resolve($resource, $attribute = null)
+    { 
+        parent::resolve($resource, $attribute); 
+
+        $this->value = $this->getProperties()->resolve($this->value)->keyBy->name->map->getValue()->all();
+    }  
+
+    public function getProperties()
     {
-        $this->asArray = $asArray; 
+        return PropertyCollection::make(call_user_func($this->propertiesCallback));
+    }
+
+    public function properties(callable $properties)
+    {
+        $this->propertiesCallback = $properties;
 
         return $this;
     }
@@ -31,8 +63,24 @@ class Collection extends Property implements AsObject
      * 
      * @return string
      */
-    protected function getValueType()
-    {
-    	return $this->asArray ? 'array' : parent::getValueType();
-    }
+    // protected function getValueType()
+    // {
+    //     return Str::camel(Str::singular($this->name).'-'.parent::getValueType());
+    // } 
+
+    /**
+     * Preaparing for json shema.
+     * 
+     * @return [type] [description]
+     */
+    public function jsonSchema()
+    {  
+        return array_merge(parent::jsonSchema(), [  
+            'properties' => $this->getProperties()->map(function($property) {
+                return array_merge($property->jsonSchema(), [
+                    'name' => $property->name,
+                ]);
+            }),
+        ]);
+    } 
 }

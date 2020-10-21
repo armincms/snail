@@ -148,8 +148,7 @@ abstract class Schema implements ArrayAccess, UrlRoutable
      */
     public function serializeForDisplay($properties)
     { 
-        return PropertyCollection::make($properties)  
-                    ->mapInto(PropertyCollection::class)
+        return PropertyCollection::make($properties)   
                     ->pluck('value', 'name');
     }
 

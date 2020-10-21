@@ -49,11 +49,10 @@ class BelongsTo extends Relation
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function serializeForSchema(Request $request)
+    public function jsonSchema()
     {
-        return array_merge(parent::serializeForSchema($request), [
-            'properties' => $this->resolveProperties($this->resourceClass)
-                                    ->map->serializeForSchema($request),
+        return array_merge(parent::jsonSchema(), [
+            'properties' => $this->resolveProperties($this->resourceClass)->map->jsonSchema(),
         ]);
     }
 
