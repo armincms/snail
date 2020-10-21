@@ -15,7 +15,7 @@ class ResourceRequest extends SnailRequest
      */
     public function authorize()
     {
-    	return with($this->resource(), function($resource) {
+    	return with($this->newResource(), function($resource) { 
     		return $resource instanceof MustBeAuthenticated 
     					? app('auth')->guard($resource->authenticateVia())->check()
     					: true;
