@@ -145,7 +145,9 @@ class Snail
      */
     public static function resources(array $resources)
     {   
-        static::$resources[static::currentVersion()] = $resources;
+        static::$resources[static::currentVersion()] = array_merge(
+            static::$resources[static::currentVersion()] ?? [], $resources
+        );
 
         return new static;
     }  
