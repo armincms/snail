@@ -10,6 +10,8 @@ use Armincms\Snail\Contracts\Resolvable;
 
 class Collection extends Property implements AsObject
 {         
+    use ResolvesProperties;
+
     /**
      * Create a new field.
      *
@@ -25,26 +27,24 @@ class Collection extends Property implements AsObject
         $this->propertiesCallback = function() {
             return [ 
             ];
-        };
-
-        $this->displayUsing(function($value, $resource, $attribute) { 
-            return $this->getProperties()->resolveForDisplay($value)->keyBy->name->map->getValue()->all();
-        });
-    } 
+        }; 
+    }   
 
     /**
-     * Resolve the property's value.
+     * Resolve the property's for hte given resolver.
      *
      * @param  mixed  $resource
-     * @param  string|null  $attribute
-     * @return void
+     * @param  callable  $resolve
+     * @return array
      */
-    public function resolve($resource, $attribute = null)
-    { 
-        parent::resolve($resource, $attribute); 
-
-        $this->value = $this->getProperties()->resolve($this->value)->keyBy->name->map->getValue()->all();
-    }  
+    protected function resolveVia($resource, $resolve)
+    {
+        return $this->getProperties()
+                    ->$resolve($this->value) 
+                    ->keyBy->name 
+                    ->map->getValue() 
+                    ->all();  
+    }
 
     public function getProperties()
     {

@@ -8,6 +8,8 @@ use Armincms\Snail\Contracts\AsArray;
  
 class Map extends Property implements AsArray 
 {         
+    use ResolvesProperties;
+
     /**
      * The callback to be used to serialize the property's value.
      *
@@ -28,54 +30,11 @@ class Map extends Property implements AsArray
         parent::__construct($name, $attribute, $resolveCallback);
 
         $this->using(Text::class); 
-    } 
 
-
-    /**
-     * Resolve the property's value for display.
-     *
-     * @param  mixed  $resource
-     * @param  string|null  $attribute
-     * @return void
-     */
-    public function resolveForDisplay($resource, $attribute = null)
-    { 
-        parent::resolve($resource, $attribute);
-
-        $this->value = $this->resolveVia($resource, __FUNCTION__); 
-    }
-
-    /**
-     * Resolve the property's value.
-     *
-     * @param  mixed  $resource
-     * @param  string|null  $attribute
-     * @return void
-     */
-    public function resolve($resource, $attribute = null)
-    {
-        parent::resolve($resource, $attribute);
-
-        $this->value = $this->resolveVia($resource, __FUNCTION__); 
-    } 
-
-    /**
-     * Resolve the property's for hte given resolver.
-     *
-     * @param  mixed  $resource
-     * @param  string|null  $attribute
-     * @return array
-     */
-    protected function resolveVia($resource, $resolve)
-    {
-        return PropertyCollection::make($this->value)
-                            ->map(function($value, $attribute) use ($resource) {
-                                return $this->prepareUsing($attribute, $value, $resource);
-                            }) 
-                            ->$resolve($this->value)
-                            ->map->getValue()
-                            ->all();  
-    } 
+        $this->nullValues(function($values) {
+            return empty($values);
+        });
+    }  
 
     /**
      * Init the using field.
