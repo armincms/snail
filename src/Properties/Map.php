@@ -75,7 +75,7 @@ class Map extends Property implements AsArray
 
         return array_merge(parent::jsonSchema(), [ 
             'items'   => "array[{$itemKey}]", 
-            $itemKey => with(call_user_func($this->using, $this->attribute, [], []), function($property) {
+            $itemKey => with($this->prepareUsing($this->name, [], []), function($property) {
                 return $property->jsonSchema();
             })
         ]);
