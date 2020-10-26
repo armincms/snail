@@ -148,7 +148,7 @@ abstract class Property extends Displayable implements Resolvable, AsString
      */
     protected function resolveAttribute($resource, $attribute)
     {
-        return is_callable($attribute) 
+        return $attribute instanceof \Closure
                     ? call_user_func($attribute, $resource) 
                     : data_get($resource, str_replace('->', '.', $attribute));
     }
