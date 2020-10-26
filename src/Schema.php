@@ -18,8 +18,7 @@ abstract class Schema implements ArrayAccess, UrlRoutable
         DelegatesToResource, 
         ResolvesProperties,
         ResolvesFilters,
-        PerformsQueries,
-        Authorizable;
+        PerformsQueries;
 
     /**
      * The underlying model resource instance.

@@ -209,9 +209,7 @@ class Snail
             return array_merge([
                 'uriKey'                => $resource::uriKey(),
                 'label'                 => $resource::label(),
-                'singularLabel'         => $resource::singularLabel(),
-                // 'authorizedToCreate' => $resource::authorizedToCreate($request),
-                // 'searchable'         => $resource::searchable(), 
+                'singularLabel'         => $resource::singularLabel(), 
             ], $resource::additionalInformation($request));
         })->values()->all();
     }

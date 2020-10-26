@@ -17,9 +17,7 @@ class ResourceShowController extends Controller
     {
         $resource = $request->newResourceWith(tap($request->findModelQuery(), function ($query) use ($request) {
             $request->newResource()->detailQuery($request, $query);
-        })->firstOrFail());
-
-        $resource->authorizedToView($request);  
+        })->firstOrFail()); 
 
         return response()->json($resource->serializeForDetail($request)); 
     }

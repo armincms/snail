@@ -47,11 +47,11 @@ trait ResolvesProperties
      */
     protected function resolveProperties(SnailRequest $request, Closure $filter = null)
     {  
-        $properties = $this->availableProperties($request)
-                           ->resolve($this->resource)
-                           ->authorized($request);
+        $filter = $filter ?: function($properties) {
+            return $properties;
+        }; 
 
-        return is_null($filter) ? $properties : $filter($properties); 
+        return $filter($this->availableProperties($request)->resolve($this->resource)); 
     }  
 
     /**

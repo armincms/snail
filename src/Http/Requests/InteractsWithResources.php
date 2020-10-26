@@ -15,8 +15,7 @@ trait InteractsWithResources
     {   
         return Snail::version($this->route('version'), function($snail) {
             return tap($snail->resourceForKey($this->route('resource')), function ($resource) { 
-                abort_if(is_null($resource), 404);
-                // abort_if(! $resource::authorizedToViewAny($this), 403); 
+                abort_if(is_null($resource), 404); 
             }); 
         }); 
     } 

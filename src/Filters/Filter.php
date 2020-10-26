@@ -6,16 +6,12 @@ use JsonSerializable;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Armincms\Snail\Snail;
-use Armincms\Snail\Metable;
-use Armincms\Snail\AuthorizedToSee;
-use Armincms\Snail\ProxiesCanSeeToGate;
+use Armincms\Snail\Metable;  
 use Armincms\Snail\Contracts\Filter as FilterContract;
 
 abstract class Filter implements FilterContract, JsonSerializable
 {
-    use Metable;
-    use AuthorizedToSee;
-    use ProxiesCanSeeToGate;
+    use Metable;  
 
     /**
      * The displayable name of the filter.

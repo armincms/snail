@@ -9,9 +9,7 @@ use JsonSerializable;
 
 abstract class Displayable implements JsonSerializable, DisplayableContract
 {
-    use Metable;
-    use AuthorizedToSee;
-    use ProxiesCanSeeToGate;
+    use Metable; 
     use Makeable;   
 
     /**
@@ -196,19 +194,8 @@ abstract class Displayable implements JsonSerializable, DisplayableContract
         $this->showOnIndex = false; 
 
         return $this;
-    }  
-
-    /**
-     * Determine if the property should be displayed for the given request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return bool
-     */
-    public function authorize(Request $request)
-    {
-        return $this->authorizedToSee($request);
-    } 
-
+    }   
+    
     /**
      * Prepare the property for JSON serialization.
      *
