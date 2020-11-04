@@ -34,6 +34,8 @@ class Number extends Property implements AsNumber
      */
     public function getValue()
     {  
+        ini_set("serialize_precision", -1);
+        
         return $this->isNullValue($this->value) 
                     ? null 
                     : floatval(number_format($this->value, $this->decimal, $this->point, ''));
