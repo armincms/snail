@@ -18,14 +18,14 @@ class Number extends Property implements AsNumber
 	 *
 	 * @var string
 	 */
-	public $point = '.';
+	// public $point = '.';
 
 	/**
 	 * The thousands separator.
      *
 	 * @var string
 	 */
-	public $thousand = ',';
+	// public $thousand = ',';
 
     /**
      * Get the value of property.
@@ -36,7 +36,7 @@ class Number extends Property implements AsNumber
     {  
         return $this->isNullValue($this->value) 
                     ? null 
-                    : number_format($this->value, $this->decimal, $this->point, $this->thousand);
+                    : floatval(number_format($this->value, $this->decimal, '', ''));
     } 
 
     /**
@@ -58,12 +58,12 @@ class Number extends Property implements AsNumber
      * @param  string $point 
      * @return $this                 
      */
-    public function point(string $point = '.')
-    {
-    	$this->point = $point;
+    // public function point(string $point = '.')
+    // {
+    // 	$this->point = $point;
 
-    	return $this;
-    }
+    // 	return $this;
+    // }
 
     /**
      * Sets the thousands separator.
@@ -71,10 +71,10 @@ class Number extends Property implements AsNumber
      * @param  string|null $separator 
      * @return $this                 
      */
-    public function thousand(string $separator = null)
-    {
-    	$this->thousand = $separator;
+    // public function thousand(string $separator = null)
+    // {
+    // 	$this->thousand = $separator;
 
-    	return $this;
-    }
+    // 	return $this;
+    // }
 }
