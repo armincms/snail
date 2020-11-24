@@ -25,7 +25,7 @@ trait PerformsQueries
         return static::applyOrderings(static::applyFilters(
             $request, static::initializeQuery($request, $query, $search, $withTrashed), $filters
         ), $orderings)->tap(function ($query) use ($request) {
-            return static::indexQuery($request, $query->with(static::$with));
+            static::indexQuery($request, $query->with(static::$with));
         });
     }
 
