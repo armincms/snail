@@ -130,6 +130,18 @@ abstract class Schema implements ArrayAccess, UrlRoutable
     }
 
     /**
+     * Get the searchable columns for the resource.
+     *
+     * @return array
+     */
+    public static function searchableColumns()
+    {
+        return empty(static::$search)
+                    ? [static::newModel()->getKeyName()]
+                    : static::$search;
+    }
+
+    /**
      * Get meta information about this resource for client side comsumption.
      *
      * @param  \Illuminate\Http\Request  $request
