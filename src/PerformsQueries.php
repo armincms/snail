@@ -44,9 +44,7 @@ trait PerformsQueries
             return static::applySoftDeleteConstraint($query, $withTrashed);
         }
 
-        return static::usesScout()
-                ? static::initializeQueryUsingScout($request, $query, $search, $withTrashed)
-                : static::applySearch(static::applySoftDeleteConstraint($query, $withTrashed), $search);
+        return static::applySearch(static::applySoftDeleteConstraint($query, $withTrashed), $search);
     }
 
     /**
@@ -74,8 +72,8 @@ trait PerformsQueries
 
             $likeOperator = $connectionType == 'pgsql' ? 'ilike' : 'like';
 
-            foreach (static::searchableProperties() as $property) {
-                $query->orWhere($model->qualifyProperty($property), $likeOperator, '%'.$search.'%');
+            foreach (static::searchableColumns() as $column) {
+                $query->orWhere($model->qualifyColumn($column), $likeOperator, '%'.$search.'%');
             }
         });
     }
