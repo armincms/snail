@@ -31,7 +31,7 @@ class ResourceIndexController extends Controller
                 'singularLabel' => $resource::singularLabel(),  
                 'data' => $paginator->getCollection()->mapInto($resource)->map->serializeForIndex($request),
             ]
-        ));
+        ), 200, [], JSON_PRESERVE_ZERO_FRACTION);
     }
 
     /**

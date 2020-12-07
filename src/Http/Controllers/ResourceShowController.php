@@ -19,6 +19,6 @@ class ResourceShowController extends Controller
             $request->newResource()->detailQuery($request, $query);
         })->firstOrFail()); 
 
-        return response()->json($resource->serializeForDetail($request)); 
+        return response()->json($resource->serializeForDetail($request), 200, [], JSON_PRESERVE_ZERO_FRACTION);
     }
 }
