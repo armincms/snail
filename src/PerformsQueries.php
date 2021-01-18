@@ -22,7 +22,7 @@ trait PerformsQueries
                                       array $filters = [], array $orderings = [],
                                       $withTrashed = TrashedStatus::DEFAULT)
     {
-        return static::applyOrderings(static::applyFilters(
+        return static::applyOrderings($request, static::applyFilters(
             $request, static::initializeQuery($request, $query, $search, $withTrashed), $filters
         ), $orderings)->tap(function ($query) use ($request) {
             static::indexQuery($request, $query->with(static::$with));
@@ -130,25 +130,16 @@ trait PerformsQueries
     /**
      * Apply any applicable orderings to the query.
      *
+     * @param  \Armincms\Snail\Http\Requests\SnailRequest  $request
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  array  $orderings
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected static function applyOrderings($query, array $orderings)
-    {
-        $orderings = array_filter($orderings);
+    protected static function applyOrderings(SnailRequest $request, $query, array $orderings)
+    { 
+        collect($orderings)->each->__invoke($request, $query);
 
-        if (empty($orderings)) {
-            return empty($query->getQuery()->orders)
-                        ? $query->latest($query->getModel()->getQualifiedKeyName())
-                        : $query;
-        }
-
-        foreach ($orderings as $property => $direction) {
-            $query->orderBy($property, $direction);
-        }
-
-        return $query;
+        return $query; 
     }
 
     /**

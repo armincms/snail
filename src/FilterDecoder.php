@@ -39,13 +39,13 @@ class FilterDecoder
      */
     public function filters()
     { 
-        return collect($this->filters)->map(function ($filter, $key) {
+        return collect($this->filters)->map(function ($value, $key) {
             $matchingFilter = $this->availableFilters->first(function ($availableFilter) use ($key) {
                 return $key === $availableFilter->key();
-            });
+            });  
 
             if ($matchingFilter) {
-                return ['filter' => $matchingFilter, 'value' => $filter['value']];
+                return ['filter' => $matchingFilter, 'value' => $value];
             }
         })
             ->filter()

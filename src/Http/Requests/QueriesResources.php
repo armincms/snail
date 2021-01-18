@@ -4,7 +4,7 @@ namespace Armincms\Snail\Http\Requests;
 
 trait QueriesResources
 {
-    use DecodesFilters;
+    use DecodesFilters, DecodesOrderings;
 
     /**
      * Transform the request into a query.
@@ -17,7 +17,7 @@ trait QueriesResources
 
         return $resource::buildIndexQuery(
             $this, $this->newQuery(), $this->search,
-            $this->filters()->all(), $this->orderings(), $this->trashed()
+            $this->filters()->all(), $this->orderings()->all(), $this->trashed()
         );
     }
 
@@ -53,19 +53,7 @@ trait QueriesResources
                     ->newQueryWithoutScopes()->findOrFail(
                         $this->viaResourceId
                     )->{$this->viaRelationship}()->withoutGlobalScopes();
-    }
-
-    /**
-     * Get the orderings for the request.
-     *
-     * @return array
-     */
-    public function orderings()
-    {
-        return ! empty($this->orderBy)
-                        ? [$this->orderBy => $this->orderByDirection]
-                        : [];
-    }
+    } 
 
     /**
      * Get the trashed status of the request.
