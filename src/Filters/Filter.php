@@ -5,6 +5,7 @@ namespace Armincms\Snail\Filters;
 use JsonSerializable;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Armincms\Snail\Snail;
 use Armincms\Snail\Metable;  
 use Armincms\Snail\Contracts\Filter as FilterContract;
@@ -55,7 +56,7 @@ abstract class Filter implements FilterContract, JsonSerializable
      */
     public function key()
     {
-        return base64_encode(get_class($this));
+        return Str::snake(class_basename($this));
     }
 
     /**

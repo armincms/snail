@@ -21,13 +21,5 @@ interface Filter
      * @param  mixed  $value
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function apply(Request $request, $query, $value);
-
-    /**
-     * Determine if the filter should be available for the given request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return bool
-     */
-    public function authorizedToSee(Request $request);
+    public function apply(Request $request, $query, $value); 
 }

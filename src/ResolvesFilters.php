@@ -15,7 +15,7 @@ trait ResolvesFilters
      */
     public function availableFilters(SnailRequest $request)
     {
-        return $this->resolveFilters($request)->filter->authorizedToSee($request)->values();
+        return $this->resolveFilters($request)->values();
     }
 
     /**
