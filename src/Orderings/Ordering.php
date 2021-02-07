@@ -31,7 +31,7 @@ abstract class Ordering implements OrderingContract, JsonSerializable
      */
     public function apply(Request $request, $query, $direction)
     {
-        $query->orderingBy($this->column(), $direction);
+        $query->orderBy($this->column(), $direction);
     }
 
     /**
